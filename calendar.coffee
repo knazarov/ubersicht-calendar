@@ -103,7 +103,9 @@ render: (output) -> """
 hours: (str) ->
     regex = /(\d+):(\d+)/
     result = regex.exec(str)
-    return parseInt(result[1]) + parseInt(result[2])/60
+    if result
+        return parseInt(result[1]) + parseInt(result[2])/60
+    return 25
 
 
 intersects: (ev1, ev2) ->
@@ -149,21 +151,22 @@ update: (output, domEl) ->
 
     for line in lines
         result = line_regex.exec(line)
-        if result[4] == '...'
-            result[4] = "24:00"
+        if result
+            if result[4] == '...'
+                result[4] = "24:00"
 
-        link = link_regex.exec(result[6])
+            link = link_regex.exec(result[6])
 
-        event =
-            start_date: result[1]
-            start_time: @hours(result[2])
-            end_date: result[3] or result[1]
-            end_time: @hours(result[4])
-            title: result[5]
-            notes: result[6]
-            link: link or ""
+            event =
+                start_date: result[1]
+                start_time: @hours(result[2])
+                end_date: result[3] or result[1]
+                end_time: @hours(result[4])
+                title: result[5]
+                notes: result[6]
+                link: link or ""
 
-        events.push(event)
+            events.push(event)
 
     for event in events
         diff_hours = (event.end_time - event.start_time)
